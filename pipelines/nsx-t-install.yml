@@ -105,123 +105,120 @@ nsx_t_extras_params: &nsx-t-extras-params
   nsx_t_lbr_spec_int: ((nsx_t_lbr_spec))
 
 groups:
+  - name: full-install-config
+    jobs:
+      - install-nsx-t
+      - add-nsx-t-routers
+      - config-nsx-t-extras
 
-- name: full-install-config
-  jobs:
-  - install-nsx-t
-  - add-nsx-t-routers
-  - config-nsx-t-extras
+  - name: install-nsx-t
+    jobs:
+      - standalone-install-nsx-t
 
-- name: install-nsx-t
-  jobs:
-  - standalone-install-nsx-t
+  - name: add-nsx-t-routers
+    jobs:
+      - standalone-add-nsx-t-routers
 
-- name: add-nsx-t-routers
-  jobs:
-  - standalone-add-nsx-t-routers
-
-- name: config-nsx-t-extras
-  jobs:
-  - standalone-config-nsx-t-extras
+  - name: config-nsx-t-extras
+    jobs:
+      - standalone-config-nsx-t-extras
 
 resource_types:
-- name: file-url
-  type: docker-image
-  source:
-    repository: pivotalservices/concourse-curl-resource
-    tag: latest
-
+  - name: file-url
+    type: docker-image
+    source:
+      repository: pivotalservices/concourse-curl-resource
+      tag: latest
 
 resources:
-- name: nsx-t-gen-pipeline
-  type: git
-  source:
-    uri: https://github.com/vmware/nsx-t-datacenter-ci-pipelines.git
-    params:
-      disable_git_lfs: true
-    branch: ((nsx_t_pipeline_branch))
+  - name: nsx-t-gen-pipeline
+    type: git
+    source:
+      uri: github.com:emanuelferguson/nsx-t-datacenter-ci-pipelines.git
+      params:
+        disable_git_lfs: true
+      branch: ((nsx_t_pipeline_branch))
 
-- name: nsxt-ansible
-  type: git
-  source:
-    uri: https://github.com/vmware/ansible-for-nsxt.git
-    branch: ((nsxt_ansible_branch))
+  - name: nsxt-ansible
+    type: git
+    source:
+      uri: https://github.com/vmware/ansible-for-nsxt.git
+      branch: ((nsxt_ansible_branch))
 
-- name: ovftool
-  type: file-url
-  source:
-    url: ((nsx_image_webserver))/((ovftool_file_name))
-    filename: ((ovftool_file_name))
-    skip_ssl_verification: true
+  - name: ovftool
+    type: file-url
+    source:
+      url: ((nsx_image_webserver))/((ovftool_file_name))
+      filename: ((ovftool_file_name))
+      skip_ssl_verification: true
 
 jobs:
+  - name: install-nsx-t
+    plan:
+      - in_parallel:
+          - get: nsx-t-gen-pipeline
+          - get: nsxt-ansible
+          - get: ovftool
 
-- name: install-nsx-t
-  plan:
-  - in_parallel:
-    - get: nsx-t-gen-pipeline
-    - get: nsxt-ansible
-    - get: ovftool
+      - task: install-nsx-t
+        file: nsx-t-gen-pipeline/tasks/install-nsx-t/task.yml
+        params: *nsx-t-install-params
 
-  - task: install-nsx-t
-    file: nsx-t-gen-pipeline/tasks/install-nsx-t/task.yml
-    params: *nsx-t-install-params
+  - name: add-nsx-t-routers
+    plan:
+      - in_parallel:
+          - get: nsx-t-gen-pipeline
+          - get: nsxt-ansible
+            params: { globs: [] }
+            passed: [install-nsx-t]
+            trigger: true
 
-- name: add-nsx-t-routers
-  plan:
-  - in_parallel:
-    - get: nsx-t-gen-pipeline
-    - get: nsxt-ansible
-      params: {globs: []}
-      passed: [install-nsx-t]
-      trigger: true
+      - task: add-nsx-t-routers
+        file: nsx-t-gen-pipeline/tasks/add-nsx-t-routers/task.yml
+        params: *add-nsx-t-routers-params
 
-  - task: add-nsx-t-routers
-    file: nsx-t-gen-pipeline/tasks/add-nsx-t-routers/task.yml
-    params: *add-nsx-t-routers-params
+  - name: config-nsx-t-extras
+    plan:
+      - in_parallel:
+          - get: nsx-t-gen-pipeline
+          - get: nsxt-ansible
+            params: { globs: [] }
+            passed: [add-nsx-t-routers]
+            trigger: true
 
-- name: config-nsx-t-extras
-  plan:
-  - in_parallel:
-    - get: nsx-t-gen-pipeline
-    - get: nsxt-ansible
-      params: {globs: []}
-      passed: [add-nsx-t-routers]
-      trigger: true
+      - task: config-nsx-t-extras
+        file: nsx-t-gen-pipeline/tasks/config-nsx-t-extras/task.yml
+        params: *nsx-t-extras-params
 
-  - task: config-nsx-t-extras
-    file: nsx-t-gen-pipeline/tasks/config-nsx-t-extras/task.yml
-    params: *nsx-t-extras-params
+  - name: standalone-install-nsx-t
+    plan:
+      - in_parallel:
+          - get: nsx-t-gen-pipeline
+          - get: nsxt-ansible
+          - get: ovftool
 
-- name: standalone-install-nsx-t
-  plan:
-  - in_parallel:
-    - get: nsx-t-gen-pipeline
-    - get: nsxt-ansible
-    - get: ovftool
+      - task: install-nsx-t
+        file: nsx-t-gen-pipeline/tasks/install-nsx-t/task.yml
+        params: *nsx-t-install-params
 
-  - task: install-nsx-t
-    file: nsx-t-gen-pipeline/tasks/install-nsx-t/task.yml
-    params: *nsx-t-install-params
+  - name: standalone-add-nsx-t-routers
+    plan:
+      - in_parallel:
+          - get: nsx-t-gen-pipeline
+          - get: nsxt-ansible
+            params: { globs: [] }
 
-- name: standalone-add-nsx-t-routers
-  plan:
-  - in_parallel:
-    - get: nsx-t-gen-pipeline
-    - get: nsxt-ansible
-      params: {globs: []}
+      - task: add-nsx-t-routers
+        file: nsx-t-gen-pipeline/tasks/add-nsx-t-routers/task.yml
+        params: *add-nsx-t-routers-params
 
-  - task: add-nsx-t-routers
-    file: nsx-t-gen-pipeline/tasks/add-nsx-t-routers/task.yml
-    params: *add-nsx-t-routers-params
+  - name: standalone-config-nsx-t-extras
+    plan:
+      - in_parallel:
+          - get: nsx-t-gen-pipeline
+          - get: nsxt-ansible
+            params: { globs: [] }
 
-- name: standalone-config-nsx-t-extras
-  plan:
-  - in_parallel:
-    - get: nsx-t-gen-pipeline
-    - get: nsxt-ansible
-      params: {globs: []}
-
-  - task: config-nsx-t-extras
-    file: nsx-t-gen-pipeline/tasks/config-nsx-t-extras/task.yml
-    params: *nsx-t-extras-params
+      - task: config-nsx-t-extras
+        file: nsx-t-gen-pipeline/tasks/config-nsx-t-extras/task.yml
+        params: *nsx-t-extras-params
