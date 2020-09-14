@@ -106,6 +106,7 @@
       with_items:
         - "{{hostvars['localhost'].clusters_to_install_nsx}}"
       when:
+        - hostvars['localhost'].use_vds == false
         - hostvars['localhost'].clusters_to_install_nsx is defined
         - hostvars['localhost'].per_cluster_vlans is defined
       register: transport_node_profile_result
