@@ -190,7 +190,7 @@
               management_port_subnets:
                 - ip_addresses:
                     - "{{hostvars[item].ip}}"
-                  prefix_length: "{{hostvars[item].prefix_length}}"
+              prefix_length: "{{hostvars[item].prefix_length}}"
               enable_ssh: "{{hostvars['localhost'].nsx_manager_ssh_enabled}}"
         state: present
       with_items: "{{groups['controllers']}}"
