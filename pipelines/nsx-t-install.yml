@@ -17,6 +17,7 @@ nsx_t_install_params: &nsx-t-install-params
   nsx_image_webserver_int: ((nsx_image_webserver))
   ova_file_name_int: ((ova_file_name))
   ovftool_file_name_int: ((ovftool_file_name))
+  use_vds_int: ((use_vds))
 
   unified_appliance_int: ((unified_appliance))
   nsx_manager_ips_int: ((nsx_manager_ips))
@@ -34,8 +35,10 @@ nsx_t_install_params: &nsx-t-install-params
   resource_reservation_off_int: ((resource_reservation_off))
   appliance_ready_wait_int: ((appliance_ready_wait))
 
+  compute_manager_name_int: ((compute_manager_name))
   compute_manager_username_int: ((compute_manager_username))
   compute_manager_password_int: ((compute_manager_password))
+  compute_manager_2_name_int: ((compute_manager_2_name))
   compute_manager_2_username_int: ((compute_manager_2_username))
   compute_manager_2_password_int: ((compute_manager_2_password))
   compute_manager_2_vcenter_ip_int: ((compute_manager_2_vcenter_ip))
