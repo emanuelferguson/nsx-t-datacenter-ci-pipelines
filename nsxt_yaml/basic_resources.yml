@@ -145,7 +145,7 @@
         - "{{hostvars['localhost'].clusters_to_install_nsx}}"
       when:
         - hostvars['localhost'].use_vds == true
-        - hostvars['localhost'].per_cluster_vlans is defined
+        # - hostvars['localhost'].per_cluster_vlans is defined
       register: transport_node_profile_result
 
     - name: Create transport node collection for the cluster to enable auto creation of TNs
