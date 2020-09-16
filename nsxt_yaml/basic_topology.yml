@@ -191,6 +191,8 @@
                 - ip_addresses:
                     - "{{hostvars[item].ip}}"
                   prefix_length: "{{hostvars[item].prefix_length}}"
+              dns_servers:
+                - "{{hostvars['localhost'].dns_server}}"
               enable_ssh: "{{hostvars['localhost'].nsx_manager_ssh_enabled}}"
         state: present
       with_items: "{{groups['controllers']}}"
