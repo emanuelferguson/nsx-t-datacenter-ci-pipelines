@@ -40,7 +40,7 @@ def add_dns_server_option():
                     line = line.replace(line, dns_line)
                     print(dns_line)
                 elif PREFIX_LENGTH in line:
-                    leading_spaces = len(line) - len(line.lstrip()) - 2
+                    leading_spaces = len(line) - len(line.lstrip()) - 4
                     dns_line = ' ' * leading_spaces
                     if ',' not in dns_servers_spec:
                         dns_line += "dns_servers: [\"{{hostvars['localhost'].dns_server}}\"]"
@@ -80,5 +80,5 @@ def add_ids_in_param_if_necessary():
 
 
 if __name__ == "__main__":
-    # add_dns_server_option()
+    add_dns_server_option()
     add_ids_in_param_if_necessary()
