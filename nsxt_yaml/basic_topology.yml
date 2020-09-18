@@ -315,7 +315,7 @@
               root_password: "{{hostvars[item].edge_root_password}}"
             vm_deployment_config:
               placement_type: VsphereDeploymentConfig
-              vc_name: "{{compute_manager_name}}"
+              vc_name: "{{hostvars['localhost'].compute_manager_name}}"
               data_networks:
                 - "{{hostvars[item].vc_overlay_network_for_edge}}"
                 - "{{hostvars[item].vc_uplink_network_for_edge}}"
