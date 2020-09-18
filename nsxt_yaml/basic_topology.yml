@@ -180,7 +180,7 @@
               root_password: "{{hostvars['localhost'].nsx_manager_root_pwd}}"
             deployment_config:
               placement_type: VsphereClusterNodeVMDeploymentConfig
-              vc_name: "{{compute_manager_name}}"
+              vc_name: "{{hostvars['localhost'].compute_manager_name}}"
               management_network: "{{hostvars['localhost'].vc_management_network_for_deployment}}"
               hostname: "{{hostvars[item].hostname}}"
               compute: "{{hostvars['localhost'].vc_cluster_for_deployment}}"
