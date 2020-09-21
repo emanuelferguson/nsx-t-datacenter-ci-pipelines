@@ -112,7 +112,7 @@
         username: "{{hostvars['localhost'].nsx_manager_username}}"
         password: "{{hostvars['localhost'].nsx_manager_password}}"
         validate_certs: False
-        display_name: "{{hostvars['localhost'].compute_manager_name}}"
+        display_name: "{{compute_manager_name}}"
         server: "{{hostvars['localhost'].vcenter_ip}}" # vCenter IP
         origin_type: vCenter
         credential:
@@ -180,7 +180,7 @@
               root_password: "{{hostvars['localhost'].nsx_manager_root_pwd}}"
             deployment_config:
               placement_type: VsphereClusterNodeVMDeploymentConfig
-              vc_name: "{{hostvars['localhost'].compute_manager_name}}"
+              vc_name: "{{compute_manager_name}}"
               management_network: "{{hostvars['localhost'].vc_management_network_for_deployment}}"
               hostname: "{{hostvars[item].hostname}}"
               compute: "{{hostvars['localhost'].vc_cluster_for_deployment}}"
@@ -315,7 +315,7 @@
               root_password: "{{hostvars[item].edge_root_password}}"
             vm_deployment_config:
               placement_type: VsphereDeploymentConfig
-              vc_name: "{{hostvars['localhost'].compute_manager_name}}"
+              vc_name: "{{compute_manager_name}}"
               data_networks:
                 - "{{hostvars[item].vc_overlay_network_for_edge}}"
                 - "{{hostvars[item].vc_uplink_network_for_edge}}"

@@ -50,7 +50,7 @@
         password: "{{hostvars['localhost'].nsx_manager_password}}"
         validate_certs: False
         display_name: "{{item}}-fabric_template"
-        compute_manager_name: "{{hostvars['localhost'].compute_manager_name}}"
+        compute_manager_name: "{{compute_manager_name}}"
         cluster_name: "{{item}}"
         auto_install_nsx: True
         state: present
@@ -68,7 +68,7 @@
         validate_certs: False
         resource_type: UplinkHostSwitchProfile
         display_name: "{{item.0}}-profile"
-        mtu: 1600
+        mtu: 9000
         teaming: "{{common_teaming_spec_for_esx}}"
         transport_vlan: "{{item.1}}"
         state: "present"
@@ -157,7 +157,7 @@
         display_name: "{{item}}-transport_node_collection"
         description: Transport node collection
         resource_type: "TransportNodeCollection"
-        compute_manager_name: "{{hostvars['localhost'].compute_manager_name}}"
+        compute_manager_name: "{{compute_manager_name}}"
         cluster_name: "{{item}}"
         transport_node_profile_name: "{{item}}-transport_node_profile"
         state: present
